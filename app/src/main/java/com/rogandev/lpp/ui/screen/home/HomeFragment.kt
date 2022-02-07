@@ -1,42 +1,42 @@
-package com.rogandev.lpp.ui.screen
+package com.rogandev.lpp.ui.screen.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.rogandev.lpp.ui.component.RouteIndicator
 import com.rogandev.lpp.ui.component.RouteIndicators
-import com.rogandev.lpp.ui.model.UiRoute
 import com.rogandev.lpp.ui.model.UiStation
 import com.rogandev.lpp.ui.theme.EmonaTheme
-import com.rogandev.lpp.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainFragment : Fragment() {
+class HomeFragment : Fragment() {
 
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<HomeViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -53,7 +53,7 @@ class MainFragment : Fragment() {
 }
 
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen(viewModel: HomeViewModel) {
 
     val state by viewModel.uiStateFlow.collectAsState()
 
@@ -73,49 +73,26 @@ fun MainScreen(viewModel: MainViewModel) {
         },
 
         content = {
-            LazyColumn {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
 
                 if (state.loading) {
-                    item {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    }
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
                 if (state.nearbyStations.isNotEmpty()) {
-                    item {
-                        StationsNearby(stations = state.nearbyStations)
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Divider()
-                    }
+                    StationsNearby(stations = state.nearbyStations)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Divider()
                 }
 
-                if (state.stations.isNotEmpty()) {
-                    item {
-                        StationsAll(highlighted = state.stations)
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Divider()
-                    }
-                }
-
-                if (state.routes.isNotEmpty()) {
-                    item {
-                        Section(modifier = Modifier.fillMaxWidth(), nameText = "Routes", actionText = "Show all")
-                    }
-
-                    items(state.routes) { route ->
-
-                        // Elevated surface for station
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp),
-                            elevation = 2.dp,
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            RouteContent(route = UiRoute("1", "1", Color.Black))
+                if (state.cards.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    state.cards.chunked(2).forEach { cardChunk ->
+                        Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                            cardChunk.forEach { card ->
+                                SquareCard(modifier = Modifier.weight(1f), text = card.title, iconResId = card.iconResId)
+                            }
                         }
-
-                        Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
             }
@@ -128,20 +105,15 @@ fun StationsNearby(modifier: Modifier = Modifier, stations: List<UiStation>) {
     Column(modifier = modifier) {
         Section(modifier = Modifier.fillMaxWidth(), nameText = "Nearby stops", actionText = "Show more")
         LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            items(stations) { station ->
-                StationCard(station = station, modifier = Modifier.width(200.dp))
-            }
-        }
-    }
-}
-
-@Composable
-fun StationsAll(modifier: Modifier = Modifier, highlighted: List<UiStation>) {
-    Column(modifier = modifier) {
-        Section(modifier = Modifier.fillMaxWidth(), nameText = "Stops", actionText = "Show all")
-        LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            items(highlighted) { station ->
-                StationCard(station = station, modifier = Modifier.width(200.dp))
+            items(stations.chunked(2)) { columnStations ->
+                Column {
+                    columnStations.forEachIndexed { index, station ->
+                        StationCard(station = station, modifier = Modifier.width(220.dp))
+                        if (index != columnStations.lastIndex) {
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+                    }
+                }
             }
         }
     }
@@ -223,34 +195,37 @@ fun StationContent(modifier: Modifier = Modifier, station: UiStation) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun RouteContent(route: UiRoute) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier.padding(10.dp)) {
-            RouteIndicator(
-                size = 35.dp,
-                route = route,
-            )
+fun SquareCard(modifier: Modifier = Modifier, text: String, @DrawableRes iconResId: Int) {
+    Surface(
+        modifier = modifier.aspectRatio(1f),
+        elevation = 2.dp,
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colors.surface,
+        onClick = {
+
         }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
 
-        Column(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, end = 10.dp)) {
-
-            Text(
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                text = "Start name"
+            Icon(
+                imageVector = ImageVector.vectorResource(id = iconResId),
+                contentDescription = null,
+                tint = MaterialTheme.colors.onSurface
             )
 
             Text(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                text = "Middle name"
-            )
-
-            Text(
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                text = "End name"
+                modifier = Modifier.padding(10.dp),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                text = text,
             )
         }
     }

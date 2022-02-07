@@ -1,8 +1,10 @@
-package com.rogandev.lpp.ui.viewmodel
+package com.rogandev.lpp.ui.screen.home
 
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rogandev.lpp.R
 import com.rogandev.lpp.repository.StationRepository
 import com.rogandev.lpp.ui.model.UiRoute
 import com.rogandev.lpp.ui.model.UiStation
@@ -15,11 +17,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val stationRepository: StationRepository,
 ) : ViewModel() {
 
-    private val _uiStateFlow = MutableStateFlow(MainScreenState(emptyList(), emptyList(), emptyList(), false))
+    private val cards = listOf(
+        MainScreenCard("Stops", R.drawable.ic_bus),
+        MainScreenCard("Routes", R.drawable.ic_trip),
+        MainScreenCard("Help", R.drawable.ic_book),
+    )
+
+    private val _uiStateFlow = MutableStateFlow(MainScreenState(emptyList(), cards,false))
     val uiStateFlow get() = _uiStateFlow.asStateFlow()
 
     init {
@@ -40,7 +48,7 @@ class MainViewModel @Inject constructor(
                 }
             }.onSuccess { stations ->
                 _uiStateFlow.update {
-                    it.copy(stations = stations, loading = false)
+                    it.copy(nearbyStations = stations.shuffled().take(10), loading = false)
                 }
             }.onFailure {
                 _uiStateFlow.update { it.copy(loading = false) }
@@ -86,7 +94,11 @@ class MainViewModel @Inject constructor(
 
 data class MainScreenState(
     val nearbyStations: List<UiStation>,
-    val stations: List<UiStation>,
-    val routes: List<UiRoute>,
+    val cards: List<MainScreenCard>,
     val loading: Boolean,
+)
+
+data class MainScreenCard(
+    val title: String,
+    @DrawableRes val iconResId: Int,
 )
