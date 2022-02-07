@@ -5,5 +5,5 @@ data class UiStation(
     val name: String,
     val latitude: Double,
     val longitude: Double,
-    val routes: List<UiRoute>
+    val routeGroups: List<UiRouteGroup>
 )

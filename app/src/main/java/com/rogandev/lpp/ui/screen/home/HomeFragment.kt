@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,10 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.rogandev.lpp.R
 import com.rogandev.lpp.ui.component.RouteIndicators
 import com.rogandev.lpp.ui.model.UiStation
 import com.rogandev.lpp.ui.theme.EmonaTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -45,7 +52,23 @@ class HomeFragment : Fragment() {
 
             setContent {
                 EmonaTheme {
-                    MainScreen(viewModel)
+                    HomeScreen(viewModel)
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.eventFlow.collect { event ->
+                    when (event) {
+                        is HomeEvent.NavigateStations -> {
+                            findNavController().navigate(R.id.actionHomeToStations)
+                        }
+                    }
                 }
             }
         }
@@ -53,7 +76,7 @@ class HomeFragment : Fragment() {
 }
 
 @Composable
-fun MainScreen(viewModel: HomeViewModel) {
+fun HomeScreen(viewModel: HomeViewModel) {
 
     val state by viewModel.uiStateFlow.collectAsState()
 
@@ -87,10 +110,21 @@ fun MainScreen(viewModel: HomeViewModel) {
 
                 if (state.cards.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(10.dp))
-                    state.cards.chunked(2).forEach { cardChunk ->
+
+                    val screenWidth = LocalConfiguration.current.screenWidthDp
+                    val itemsPerRow = (screenWidth / 180)
+
+                    state.cards.chunked(itemsPerRow).forEach { cardChunk ->
                         Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+
                             cardChunk.forEach { card ->
-                                SquareCard(modifier = Modifier.weight(1f), text = card.title, iconResId = card.iconResId)
+                                SquareCard(modifier = Modifier.weight(1f), text = card.title, iconResId = card.iconResId, onActionClick = {
+                                    viewModel.onStationsClick()
+                                })
+                            }
+
+                            repeat(itemsPerRow - cardChunk.size) {
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
@@ -173,13 +207,13 @@ fun StationContent(modifier: Modifier = Modifier, station: UiStation) {
     Column(modifier = modifier) {
 
         // Routes on the station
-        RouteIndicators(routes = station.routes, size = 25.dp, spacing = 3.dp)
+        RouteIndicators(routeGroups = station.routeGroups, size = 30.dp, spacing = 5.dp)
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Station name
         Text(
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
             text = station.name
         )
@@ -188,7 +222,7 @@ fun StationContent(modifier: Modifier = Modifier, station: UiStation) {
 
         // Station ID
         Text(
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
             text = station.id
         )
@@ -197,29 +231,32 @@ fun StationContent(modifier: Modifier = Modifier, station: UiStation) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SquareCard(modifier: Modifier = Modifier, text: String, @DrawableRes iconResId: Int) {
+fun SquareCard(modifier: Modifier = Modifier, text: String, @DrawableRes iconResId: Int, onActionClick: () -> Unit) {
     Surface(
         modifier = modifier.aspectRatio(1f),
         elevation = 2.dp,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colors.surface,
         onClick = {
-
+            onActionClick()
         }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
             Icon(
+                modifier = Modifier.size(30.dp),
                 imageVector = ImageVector.vectorResource(id = iconResId),
                 contentDescription = null,
                 tint = MaterialTheme.colors.onSurface
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 modifier = Modifier.padding(10.dp),

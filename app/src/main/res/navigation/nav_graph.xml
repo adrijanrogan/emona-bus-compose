@@ -2,11 +2,20 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/mainFragment"
+        android:id="@+id/homeFragment"
         android:name="com.rogandev.lpp.ui.screen.home.HomeFragment"
-        android:label="MainFragment" />
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/actionHomeToStations"
+            app:destination="@id/stationsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/stationsFragment"
+        android:name="com.rogandev.lpp.ui.screen.stations.StationsFragment"
+        android:label="StationsFragment" />
 
 </navigation>

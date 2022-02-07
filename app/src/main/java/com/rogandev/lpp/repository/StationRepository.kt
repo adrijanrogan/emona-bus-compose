@@ -30,7 +30,7 @@ class StationRepository @Inject constructor(private val api: LppApi) {
                     name = it.name,
                     latitude = it.latitude,
                     longitude = it.longitude,
-                    routes = it.routes
+                    routeGroups = it.routes
                 )
             }
         }

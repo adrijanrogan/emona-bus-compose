@@ -79,6 +79,6 @@ fun StationRow(
 
         RouteIndicators(modifier = Modifier
             .weight(1f)
-            .padding(start = 10.dp), routes = station.routes)
+            .padding(start = 10.dp), routeGroups = station.routeGroups)
     }
 }
