@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EmonaBus" >
         <activity
-            android:name=".app.MainActivity"
+            android:name=".ui.screen.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.EmonaBus" >
             <intent-filter>
