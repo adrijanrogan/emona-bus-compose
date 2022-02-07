@@ -1,9 +1,5 @@
 package com.rogandev.lpp.ui.screen.home
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,64 +15,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
-import com.rogandev.lpp.R
+import androidx.navigation.NavController
 import com.rogandev.lpp.ui.component.RouteIndicators
 import com.rogandev.lpp.ui.model.UiStation
-import com.rogandev.lpp.ui.theme.EmonaTheme
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-
-@AndroidEntryPoint
-class HomeFragment : Fragment() {
-
-    private val viewModel by viewModels<HomeViewModel>()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            setContent {
-                EmonaTheme {
-                    HomeScreen(viewModel)
-                }
-            }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.eventFlow.collect { event ->
-                    when (event) {
-                        is HomeEvent.NavigateStations -> {
-                            findNavController().navigate(R.id.actionHomeToStations)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+import com.rogandev.lpp.ui.screen.Destination
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
 
     val state by viewModel.uiStateFlow.collectAsState()
 
@@ -119,7 +70,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
                             cardChunk.forEach { card ->
                                 SquareCard(modifier = Modifier.weight(1f), text = card.title, iconResId = card.iconResId, onActionClick = {
-                                    viewModel.onStationsClick()
+                                    navController.navigate(Destination.Stations.route)
                                 })
                             }
 
