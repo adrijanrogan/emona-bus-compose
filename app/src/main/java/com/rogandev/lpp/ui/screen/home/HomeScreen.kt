@@ -46,39 +46,44 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
             }
         },
 
-        content = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        content = { padding ->
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+            ) {
+
+                HomeContent(state = state, navController = navController)
 
                 if (state.loading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().padding(20.dp),
-                    value = "Išči ...",
-                    onValueChange = {},
-                )
-
-                Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    SquareCard(modifier = Modifier.weight(1f), text = "Postajališča", iconResId = R.drawable.ic_bus, onActionClick = {
-                        navController.navigate(Navigation.Stations.route)
-                    })
-                    SquareCard(modifier = Modifier.weight(1f), text = "Linije", iconResId = R.drawable.ic_trip, onActionClick = {
-                        navController.navigate(Navigation.Routes.route)
-                    })
-                }
-
-                if (state.nearbyStations.isNotEmpty()) {
-                    Divider()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    StationsNearby(stations = state.nearbyStations, onStationClick = {
-                        navController.navigate(Navigation.Station.build(it.id))
-                    })
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
             }
         },
     )
+}
+
+@Composable
+fun HomeContent(state: HomeScreenState, navController: NavController) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+
+        Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            SquareCard(modifier = Modifier.weight(1f), text = "Postajališča", iconResId = R.drawable.ic_bus, onActionClick = {
+                navController.navigate(Navigation.Stations.route)
+            })
+            SquareCard(modifier = Modifier.weight(1f), text = "Linije", iconResId = R.drawable.ic_trip, onActionClick = {
+                navController.navigate(Navigation.Routes.route)
+            })
+        }
+
+        if (state.nearbyStations.isNotEmpty()) {
+            Divider()
+            Spacer(modifier = Modifier.height(10.dp))
+            StationsNearby(stations = state.nearbyStations, onStationClick = {
+                navController.navigate(Navigation.Station.build(it.id))
+            })
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
 }
 
 @Composable

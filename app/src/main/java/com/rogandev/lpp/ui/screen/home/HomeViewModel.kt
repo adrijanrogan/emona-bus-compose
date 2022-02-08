@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(
         MainScreenCard("Help", R.drawable.ic_book),
     )
 
-    private val _uiStateFlow = MutableStateFlow(MainScreenState(emptyList(), cards,false))
+    private val _uiStateFlow = MutableStateFlow(HomeScreenState(emptyList(), cards,false))
     val uiStateFlow get() = _uiStateFlow.asStateFlow()
 
     private val eventChannel = Channel<HomeEvent>()
@@ -66,7 +66,7 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-data class MainScreenState(
+data class HomeScreenState(
     val nearbyStations: List<UiStation>,
     val cards: List<MainScreenCard>,
     val loading: Boolean,
