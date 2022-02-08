@@ -12,14 +12,28 @@ object RouteComparator : Comparator<UiRoute> {
 
 object RouteGroupComparator : Comparator<UiRouteGroup> {
 
+    // Compares route groups, loosely based on regex [\D]*[\d]*[\D]*
+
     override fun compare(first: UiRouteGroup, second: UiRouteGroup): Int {
-        val digitsFirst = first.name.count { it.isDigit() }
-        val digitsSecond = second.name.count { it.isDigit() }
+        val prefixFirst = first.name.takeWhile { it.isDigit().not() }
+        val prefixSecond = second.name.takeWhile { it.isDigit().not() }
+        val prefixCmp = prefixFirst.compareTo(prefixSecond)
+        if (prefixCmp != 0)
+            return prefixCmp
 
-        if (digitsFirst != digitsSecond) {
-            return digitsFirst - digitsSecond
-        }
+        val digitsFirst = first.name.filter { it.isDigit() }
+        val digitsSecond = second.name.filter { it.isDigit() }
 
-        return first.name.compareTo(second.name)
+        val digitsDiff = digitsFirst.length - digitsSecond.length
+        if (digitsDiff != 0)
+            return digitsDiff
+
+        val digitsCmp = digitsFirst.compareTo(digitsSecond)
+        if (digitsCmp != 0)
+            return digitsCmp
+
+        val suffixFirst = first.name.takeLastWhile { it.isDigit().not() }
+        val suffixSecond = second.name.takeLastWhile { it.isDigit().not() }
+        return suffixFirst.compareTo(suffixSecond)
     }
 }
