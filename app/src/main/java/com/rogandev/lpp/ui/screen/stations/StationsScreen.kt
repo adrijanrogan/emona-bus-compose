@@ -17,7 +17,7 @@ import com.rogandev.lpp.ui.model.UiStation
 fun StationsScreen(state: StationsScreenState, onBackClick: () -> Unit, onStationClick: (UiStation) -> Unit) {
     Scaffold(
         topBar = {
-            BackTopAppBar(title = "Stops", onBackClick = onBackClick)
+            BackTopAppBar(title = "Postajališča", onBackClick = onBackClick)
         },
 
         content = { padding ->

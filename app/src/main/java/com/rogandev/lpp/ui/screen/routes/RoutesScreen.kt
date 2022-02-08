@@ -17,7 +17,7 @@ import com.rogandev.lpp.ui.model.UiRoute
 fun RoutesScreen(state: RoutesScreenState, onBackClick: () -> Unit, onRouteClick: (UiRoute) -> Unit) {
     Scaffold(
         topBar = {
-            BackTopAppBar(title = "Routes", onBackClick = onBackClick)
+            BackTopAppBar(title = "Linije", onBackClick = onBackClick)
         },
 
         content = { padding ->

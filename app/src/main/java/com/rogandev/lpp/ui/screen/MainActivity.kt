@@ -20,6 +20,7 @@ import com.rogandev.lpp.ui.screen.home.HomeViewModel
 import com.rogandev.lpp.ui.screen.routes.RoutesScreen
 import com.rogandev.lpp.ui.screen.routes.RoutesViewModel
 import com.rogandev.lpp.ui.screen.station.StationScreen
+import com.rogandev.lpp.ui.screen.station.StationViewModel
 import com.rogandev.lpp.ui.screen.stations.StationsScreen
 import com.rogandev.lpp.ui.screen.stations.StationsViewModel
 import com.rogandev.lpp.ui.theme.EmonaTheme
@@ -80,7 +81,12 @@ class MainActivity : FragmentActivity() {
 
                     composable(Navigation.Station.route, arguments = Navigation.Station.arguments) { backStackEntry ->
                         val id = Navigation.Station.getIdArgument(backStackEntry)
+                        val viewModel = hiltViewModel<StationViewModel>()
+                        viewModel.setStationCode(id)
+                        val state by viewModel.uiStateFlow.collectAsState()
+
                         StationScreen(
+                            state = state,
                             onBackClick = {
                                 navController.navigateUp()
                             }

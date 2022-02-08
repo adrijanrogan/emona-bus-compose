@@ -55,15 +55,15 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().padding(20.dp),
-                    value = "Search ...",
+                    value = "Išči ...",
                     onValueChange = {},
                 )
 
                 Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    SquareCard(modifier = Modifier.weight(1f), text = "Stops", iconResId = R.drawable.ic_bus, onActionClick = {
+                    SquareCard(modifier = Modifier.weight(1f), text = "Postajališča", iconResId = R.drawable.ic_bus, onActionClick = {
                         navController.navigate(Navigation.Stations.route)
                     })
-                    SquareCard(modifier = Modifier.weight(1f), text = "Routes", iconResId = R.drawable.ic_trip, onActionClick = {
+                    SquareCard(modifier = Modifier.weight(1f), text = "Linije", iconResId = R.drawable.ic_trip, onActionClick = {
                         navController.navigate(Navigation.Routes.route)
                     })
                 }
@@ -82,7 +82,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
 @Composable
 fun StationsNearby(modifier: Modifier = Modifier, stations: List<UiStation>) {
     Column(modifier = modifier) {
-        Section(modifier = Modifier.fillMaxWidth(), nameText = "Nearby stops", actionText = "Show more")
+        Section(modifier = Modifier.fillMaxWidth(), nameText = "Postajališča v bližini", actionText = "Več")
         LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             items(stations.chunked(2)) { columnStations ->
                 Column {
