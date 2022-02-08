@@ -8,7 +8,9 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.rogandev.lpp.R
 import com.rogandev.lpp.ui.component.BackTopAppBar
 import com.rogandev.lpp.ui.component.StationCard
 import com.rogandev.lpp.ui.model.UiStation
@@ -17,11 +19,13 @@ import com.rogandev.lpp.ui.model.UiStation
 fun StationsScreen(state: StationsScreenState, onBackClick: () -> Unit, onStationClick: (UiStation) -> Unit) {
     Scaffold(
         topBar = {
-            BackTopAppBar(title = "Postajališča", onBackClick = onBackClick)
+            BackTopAppBar(title = stringResource(id = R.string.stations_title), onBackClick = onBackClick)
         },
 
         content = { padding ->
-            Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)) {
                 StationList(stations = state.stations, onStationClick = onStationClick)
 
                 if (state.loading) {

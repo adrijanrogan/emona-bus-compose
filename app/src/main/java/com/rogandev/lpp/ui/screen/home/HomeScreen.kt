@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +42,12 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
                 elevation = 4.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(text = "Emona Bus", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onPrimary)
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colors.onPrimary
+                    )
                 }
             }
         },
@@ -67,12 +73,20 @@ fun HomeContent(state: HomeScreenState, navController: NavController) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
 
         Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            SquareCard(modifier = Modifier.weight(1f), text = "Postajališča", iconResId = R.drawable.ic_bus, onActionClick = {
-                navController.navigate(Navigation.Stations.route)
-            })
-            SquareCard(modifier = Modifier.weight(1f), text = "Linije", iconResId = R.drawable.ic_trip, onActionClick = {
-                navController.navigate(Navigation.Routes.route)
-            })
+            SquareCard(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.stations_title),
+                iconResId = R.drawable.ic_bus,
+                onActionClick = {
+                    navController.navigate(Navigation.Stations.route)
+                })
+            SquareCard(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.routes_title),
+                iconResId = R.drawable.ic_trip,
+                onActionClick = {
+                    navController.navigate(Navigation.Routes.route)
+                })
         }
 
         if (state.nearbyStations.isNotEmpty()) {
@@ -89,12 +103,23 @@ fun HomeContent(state: HomeScreenState, navController: NavController) {
 @Composable
 fun StationsNearby(modifier: Modifier = Modifier, stations: List<UiStation>, onStationClick: (UiStation) -> Unit) {
     Column(modifier = modifier) {
-        Section(modifier = Modifier.fillMaxWidth(), nameText = "Postajališča v bližini", actionText = "Več")
-        LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+        Section(
+            modifier = Modifier.fillMaxWidth(),
+            nameText = stringResource(id = R.string.home_stations_nearby),
+            actionText = stringResource(id = R.string.general_more)
+        )
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
             items(stations.chunked(2)) { columnStations ->
                 Column {
                     columnStations.forEachIndexed { index, station ->
-                        StationCard(station = station, modifier = Modifier.width(220.dp), onStationClick = onStationClick)
+                        StationCard(
+                            station = station,
+                            modifier = Modifier.width(220.dp),
+                            onStationClick = onStationClick
+                        )
                         if (index != columnStations.lastIndex) {
                             Spacer(modifier = Modifier.height(20.dp))
                         }

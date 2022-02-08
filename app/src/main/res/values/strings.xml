@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">Emona Bus</string>
+
+    <!-- General -->
+    <string name="general_more">Več</string>
+
+    <!-- Home screen -->
+    <string name="home_stations_nearby">Postajališča v bližini</string>
+
+    <!-- Stations screen -->
+    <string name="stations_title">Postajališča</string>
+
+    <!-- Routes screen -->
+    <string name="routes_title">Linije</string>
+
+    <!-- Station details screen -->
+    <string name="station_title">Postajališče</string>
+    <string name="station_messages">Obvestila</string>
+    <string name="station_messages_empty">Na izbranem postajališču trenutno ni nobenih obvestil.</string>
+    <string name="station_arrivals">Prihodi</string>
+    <string name="station_arrivals_empty">Za izbrano postajališče trenutno ni napovedanih prihodov.</string>
 </resources>

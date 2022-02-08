@@ -9,12 +9,14 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+import com.rogandev.lpp.R
 import com.rogandev.lpp.ui.component.ArrivalCard
 import com.rogandev.lpp.ui.component.BackTopAppBar
 import com.rogandev.lpp.ui.component.RouteIndicators
@@ -23,7 +25,7 @@ import com.rogandev.lpp.ui.component.RouteIndicators
 fun StationScreen(state: StationScreenState, onBackClick: () -> Unit) {
     Scaffold(
         topBar = {
-            BackTopAppBar(title = "Postajališče", onBackClick = onBackClick)
+            BackTopAppBar(title = stringResource(id = R.string.station_title), onBackClick = onBackClick)
         },
 
         content = { padding ->
@@ -49,7 +51,9 @@ fun StationDetails(state: StationScreenState) {
         item {
             RouteIndicators(
                 routeGroups = state.station?.routeGroups ?: emptyList(),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -60,7 +64,7 @@ fun StationDetails(state: StationScreenState) {
                     .placeholder(state.station == null, highlight = PlaceholderHighlight.fade()),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                text = state.station?.name ?: "Station Name",
+                text = state.station?.name ?: "00000000000000",
             )
 
             Spacer(modifier = Modifier.height(5.dp))
@@ -86,7 +90,7 @@ fun StationDetails(state: StationScreenState) {
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Medium,
-                text = "Obvestila",
+                text = stringResource(id = R.string.station_messages),
             )
             Spacer(modifier = Modifier.height(10.dp))
         }
@@ -107,7 +111,7 @@ fun StationDetails(state: StationScreenState) {
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp)
                         .placeholder(state.loadingMessages, highlight = PlaceholderHighlight.fade()),
-                    text = "Na izbranem postajališču trenutno ni nobenih obvestil.",
+                    text = stringResource(id = R.string.station_messages_empty),
                 )
             }
         }
@@ -125,7 +129,7 @@ fun StationDetails(state: StationScreenState) {
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Medium,
-                text = "Prihodi",
+                text = stringResource(id = R.string.station_arrivals),
             )
             Spacer(modifier = Modifier.height(10.dp))
         }
@@ -147,7 +151,7 @@ fun StationDetails(state: StationScreenState) {
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp)
                         .placeholder(state.loadingArrivals, highlight = PlaceholderHighlight.fade()),
-                    text = "Za izbrano postajališče trenutno ni napovedanih prihodov.",
+                    text =  stringResource(id = R.string.station_arrivals_empty),
                 )
             }
         }

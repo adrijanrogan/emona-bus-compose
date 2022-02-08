@@ -8,7 +8,9 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.rogandev.lpp.R
 import com.rogandev.lpp.ui.component.BackTopAppBar
 import com.rogandev.lpp.ui.component.RouteCard
 import com.rogandev.lpp.ui.model.UiRoute
@@ -17,7 +19,7 @@ import com.rogandev.lpp.ui.model.UiRoute
 fun RoutesScreen(state: RoutesScreenState, onBackClick: () -> Unit, onRouteClick: (UiRoute) -> Unit) {
     Scaffold(
         topBar = {
-            BackTopAppBar(title = "Linije", onBackClick = onBackClick)
+            BackTopAppBar(title = stringResource(id = R.string.routes_title), onBackClick = onBackClick)
         },
 
         content = { padding ->
