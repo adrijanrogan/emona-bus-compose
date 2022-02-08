@@ -5,13 +5,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.rogandev.lpp.ui.screen.home.HomeScreen
 import com.rogandev.lpp.ui.screen.home.HomeViewModel
 import com.rogandev.lpp.ui.screen.routes.RoutesScreen
@@ -20,6 +23,7 @@ import com.rogandev.lpp.ui.screen.station.StationScreen
 import com.rogandev.lpp.ui.screen.stations.StationsScreen
 import com.rogandev.lpp.ui.screen.stations.StationsViewModel
 import com.rogandev.lpp.ui.theme.EmonaTheme
+import com.rogandev.lpp.ui.theme.Green
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalAnimationApi
@@ -30,6 +34,21 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EmonaTheme {
+                // System UI setup
+                val systemUiController = rememberSystemUiController()
+
+                SideEffect {
+                    systemUiController.setStatusBarColor(
+                        color = Green,
+                        darkIcons = false
+                    )
+                    systemUiController.setNavigationBarColor(
+                        color = Color.White,
+                        darkIcons = true
+                    )
+                }
+
+                // Navigation setup
                 val navController = rememberAnimatedNavController()
                 
                 AnimatedNavHost(
