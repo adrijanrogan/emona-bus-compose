@@ -1,5 +1,7 @@
 package com.rogandev.lpp.ui.screen.routes
 
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rogandev.lpp.ktx.mapIterable
@@ -28,7 +30,7 @@ class RoutesViewModel @Inject constructor(
             _uiStateFlow.update { it.copy(loading = true) }
 
             busRepository.getActiveRoutes().mapIterable { apiRoute ->
-                val routeNameParts = apiRoute.routeName.split('-').map { it.trim() }
+                val routeNameParts = apiRoute.routeName.split('-').map { it.trim().lowercase().capitalize(Locale("sl")) }
                 val (routeStart, routeMid, routeEnd) = when (routeNameParts.size) {
                     1 -> Triple("", emptyList(), routeNameParts.first())
                     2 -> Triple(routeNameParts[0], emptyList(), routeNameParts[1])
