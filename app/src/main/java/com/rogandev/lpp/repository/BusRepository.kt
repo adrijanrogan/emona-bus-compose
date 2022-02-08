@@ -2,6 +2,7 @@ package com.rogandev.lpp.repository
 
 import android.text.Html
 import com.rogandev.lpp.api.*
+import com.rogandev.lpp.ktx.andThen
 import retrofit2.Response
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -15,17 +16,29 @@ class BusRepository @Inject constructor(private val api: LppApi) {
     private var stopsRefresh = Instant.MIN
 
     suspend fun getActiveRoutes(): Result<List<ApiRoute>> {
-        return api.activeRoutes().getData()
+        return runCatching {
+            api.activeRoutes()
+        }.andThen {
+            it.getData()
+        }
     }
 
     suspend fun getStationArrivals(code: String): Result<List<ApiStationArrival>> {
-        return api.stationArrivals(code).getObjectData().map { arrivals ->
-            arrivals.arrivals
+        return runCatching {
+            api.stationArrivals(code)
+        }.andThen {
+            it.getObjectData()
+        }.map {
+            it.arrivals
         }
     }
 
     suspend fun getStationMessages(code: String): Result<List<String>> {
-        return api.stationMessages(code).getData().map { apiMessages ->
+        return runCatching {
+            api.stationMessages(code)
+        }.andThen {
+            it.getData()
+        }.map { apiMessages ->
             apiMessages.flatMap { apiMessage ->
                 val ampersanded = apiMessage.replace("%26", "&")
                 Html.fromHtml(ampersanded, Html.FROM_HTML_MODE_LEGACY).split("***").flatMap { unescaped ->
@@ -39,7 +52,11 @@ class BusRepository @Inject constructor(private val api: LppApi) {
         return if (stopsRefresh.plus(5, ChronoUnit.MINUTES).isAfter(Instant.now())) {
             Result.success(stops)
         } else {
-            api.stationDetails().getData().onSuccess {
+            runCatching {
+                api.stationDetails()
+            }.andThen {
+                it.getData()
+            }.onSuccess {
                 stops = it
                 stopsRefresh = Instant.now()
             }
