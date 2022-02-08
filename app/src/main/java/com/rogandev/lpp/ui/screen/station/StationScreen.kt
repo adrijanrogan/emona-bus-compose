@@ -94,13 +94,13 @@ fun StationDetails(state: StationScreenState) {
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        if (state.arrivals.isNotEmpty()) {
-            items(items = state.arrivals) { item ->
+        if (state.arrivalGroups.isNotEmpty()) {
+            items(items = state.arrivalGroups) { item ->
                 ArrivalCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp),
-                    arrival = item,
+                    arrivalGroup = item,
                     onArrivalClick = {},
                 )
             }
@@ -118,7 +118,6 @@ fun StationDetails(state: StationScreenState) {
 
         item {
             Spacer(modifier = Modifier.height(10.dp))
-            Divider()
         }
 
     }

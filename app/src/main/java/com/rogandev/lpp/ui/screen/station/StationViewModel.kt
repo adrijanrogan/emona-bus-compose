@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rogandev.lpp.repository.BusRepository
 import com.rogandev.lpp.ui.model.UiArrival
+import com.rogandev.lpp.ui.model.UiArrivalGroup
 import com.rogandev.lpp.ui.model.UiRouteGroup
 import com.rogandev.lpp.ui.screen.routes.RouteGroupNameComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,17 +44,19 @@ class StationViewModel @Inject constructor(
             while (true) {
                 _uiStateFlow.update { it.copy(loadingArrivals = true) }
 
-                busRepository.getStationArrivals(code).map { arrivals ->
-                    arrivals.groupBy { it.routeName }.toSortedMap(RouteGroupNameComparator).map { (routeName, apiArrivals) ->
+                busRepository.getStationArrivals(code).map { apiArrivals ->
+                    apiArrivals.groupBy { it.routeName }.toSortedMap(RouteGroupNameComparator).map { (routeName, apiArrivalsOnRoute) ->
                         val routeGroup = UiRouteGroup.fromName(routeName)
-                        val etas = apiArrivals.map { "${it.eta.toString(10)} min" }
+                        val arrivals = apiArrivalsOnRoute.map {
+                            UiArrival("${it.eta.toString(10)} min", false)
+                        }
 
-                        val destination = apiArrivals.first().tripName.takeLastWhile { it != '-' }.lowercase().capitalize(Locale("sl"))
+                        val destination = apiArrivalsOnRoute.first().tripName.takeLastWhile { it != '-' }.trim().lowercase().capitalize(Locale("sl"))
 
-                        UiArrival(routeGroup = routeGroup, destination = destination , etas = etas)
+                        UiArrivalGroup(routeGroup = routeGroup, destination = destination , arrivals = arrivals)
                     }
                 }.onSuccess { arrivals ->
-                    _uiStateFlow.update { it.copy(arrivals = arrivals, loadingArrivals = false) }
+                    _uiStateFlow.update { it.copy(arrivalGroups = arrivals, loadingArrivals = false) }
                 }.onFailure { err ->
                     Timber.e(err)
                     _uiStateFlow.update { it.copy(loadingArrivals = false) }
@@ -72,7 +75,7 @@ class StationViewModel @Inject constructor(
 
 data class StationScreenState(
     val messages: List<String>,
-    val arrivals: List<UiArrival>,
+    val arrivalGroups: List<UiArrivalGroup>,
     val loadingMessages: Boolean,
     val loadingArrivals: Boolean,
 )
