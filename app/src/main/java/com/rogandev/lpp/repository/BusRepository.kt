@@ -1,10 +1,7 @@
 package com.rogandev.lpp.repository
 
 import android.text.Html
-import com.rogandev.lpp.api.ApiList
-import com.rogandev.lpp.api.ApiRoute
-import com.rogandev.lpp.api.ApiStationDetails
-import com.rogandev.lpp.api.LppApi
+import com.rogandev.lpp.api.*
 import retrofit2.Response
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -19,6 +16,12 @@ class BusRepository @Inject constructor(private val api: LppApi) {
 
     suspend fun getActiveRoutes(): Result<List<ApiRoute>> {
         return api.activeRoutes().getData()
+    }
+
+    suspend fun getStationArrivals(code: String): Result<List<ApiStationArrival>> {
+        return api.stationArrivals(code).getObjectData().map { arrivals ->
+            arrivals.arrivals
+        }
     }
 
     suspend fun getStationMessages(code: String): Result<List<String>> {
@@ -56,6 +59,20 @@ class BusRepository @Inject constructor(private val api: LppApi) {
 
         if (body.success.not()) {
             throw Throwable("Response is successful, but body says failure")
+        }
+
+        body.data ?: throw Throwable("Response and body is successful, but data is null")
+    }
+
+    private fun <T> Response<ApiObject<T>>.getObjectData(): Result<T> = runCatching {
+        val body = body()
+
+        if (isSuccessful.not()) {
+            throw Throwable("Response not successful, error body: ${errorBody()}")
+        }
+
+        if (body == null) {
+            throw Throwable("Response is successful, but body is null")
         }
 
         body.data ?: throw Throwable("Response and body is successful, but data is null")

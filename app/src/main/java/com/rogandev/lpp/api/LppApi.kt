@@ -17,6 +17,9 @@ interface LppApi {
 
     // Station
 
+    @GET("station/arrival")
+    suspend fun stationArrivals(@Query("station-code") code: String): Response<ApiObject<ApiStationArrivals>>
+
     @GET("station/messages")
     suspend fun stationMessages(@Query("station-code") code: String): Response<ApiList<String>>
 

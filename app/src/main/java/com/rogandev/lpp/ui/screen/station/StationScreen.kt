@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+import com.rogandev.lpp.ui.component.ArrivalCard
 import com.rogandev.lpp.ui.component.BackTopAppBar
 
 @Composable
@@ -30,7 +31,7 @@ fun StationScreen(state: StationScreenState, onBackClick: () -> Unit) {
                 .padding(padding)) {
                 StationDetails(state)
 
-                if (state.loading) {
+                if (state.loadingMessages || state.loadingArrivals) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
             }
@@ -69,7 +70,7 @@ fun StationDetails(state: StationScreenState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .placeholder(state.loading, highlight = PlaceholderHighlight.fade()),
+                        .placeholder(state.loadingMessages, highlight = PlaceholderHighlight.fade()),
                     text = "Na izbranem postajališču trenutno ni nobenih obvestil.",
                 )
             }
@@ -82,6 +83,43 @@ fun StationDetails(state: StationScreenState) {
 
         // Arrivals
 
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Medium,
+                text = "Prihodi",
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
+        if (state.arrivals.isNotEmpty()) {
+            items(items = state.arrivals) { item ->
+                ArrivalCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                    arrival = item,
+                    onArrivalClick = {},
+                )
+            }
+        } else {
+            item {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .placeholder(state.loadingArrivals, highlight = PlaceholderHighlight.fade()),
+                    text = "Za izbrano postajališče trenutno ni napovedanih prihodov.",
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(10.dp))
+            Divider()
+        }
 
     }
 }

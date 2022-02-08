@@ -11,6 +11,12 @@ class ApiList<T>(
     val data: List<T>?,
 )
 
+@Serializable
+class ApiObject<T>(
+    @SerialName("data")
+    val data: T?,
+)
+
 // Route
 
 @Serializable
@@ -26,6 +32,22 @@ class ApiRoute(
 )
 
 // Station
+
+@Serializable
+class ApiStationArrivals(
+    @SerialName("arrivals")
+    val arrivals: List<ApiStationArrival>
+)
+
+@Serializable
+class ApiStationArrival(
+    @SerialName("eta_min")
+    val eta: Int,
+    @SerialName("route_name")
+    val routeName: String,
+    @SerialName("trip_name")
+    val tripName: String,
+)
 
 @Serializable
 class ApiStationDetails(

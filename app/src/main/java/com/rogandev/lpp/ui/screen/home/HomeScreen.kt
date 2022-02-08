@@ -71,7 +71,9 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
                 if (state.nearbyStations.isNotEmpty()) {
                     Divider()
                     Spacer(modifier = Modifier.height(10.dp))
-                    StationsNearby(stations = state.nearbyStations)
+                    StationsNearby(stations = state.nearbyStations, onStationClick = {
+                        navController.navigate(Navigation.Station.build(it.id))
+                    })
                     Spacer(modifier = Modifier.height(10.dp))
                 }
             }
@@ -80,14 +82,14 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
 }
 
 @Composable
-fun StationsNearby(modifier: Modifier = Modifier, stations: List<UiStation>) {
+fun StationsNearby(modifier: Modifier = Modifier, stations: List<UiStation>, onStationClick: (UiStation) -> Unit) {
     Column(modifier = modifier) {
         Section(modifier = Modifier.fillMaxWidth(), nameText = "Postajališča v bližini", actionText = "Več")
         LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             items(stations.chunked(2)) { columnStations ->
                 Column {
                     columnStations.forEachIndexed { index, station ->
-                        StationCard(station = station, modifier = Modifier.width(220.dp), onStationClick = {})
+                        StationCard(station = station, modifier = Modifier.width(220.dp), onStationClick = onStationClick)
                         if (index != columnStations.lastIndex) {
                             Spacer(modifier = Modifier.height(20.dp))
                         }

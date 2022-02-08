@@ -15,14 +15,21 @@ object RouteGroupComparator : Comparator<UiRouteGroup> {
     // Compares route groups, loosely based on regex [\D]*[\d]*[\D]*
 
     override fun compare(first: UiRouteGroup, second: UiRouteGroup): Int {
-        val prefixFirst = first.name.takeWhile { it.isDigit().not() }
-        val prefixSecond = second.name.takeWhile { it.isDigit().not() }
+        return RouteGroupNameComparator.compare(first.name, second.name)
+    }
+}
+
+object RouteGroupNameComparator : Comparator<String> {
+
+    override fun compare(first: String, second: String): Int {
+        val prefixFirst = first.takeWhile { it.isDigit().not() }
+        val prefixSecond = second.takeWhile { it.isDigit().not() }
         val prefixCmp = prefixFirst.compareTo(prefixSecond)
         if (prefixCmp != 0)
             return prefixCmp
 
-        val digitsFirst = first.name.filter { it.isDigit() }
-        val digitsSecond = second.name.filter { it.isDigit() }
+        val digitsFirst = first.filter { it.isDigit() }
+        val digitsSecond = second.filter { it.isDigit() }
 
         val digitsDiff = digitsFirst.length - digitsSecond.length
         if (digitsDiff != 0)
@@ -32,8 +39,8 @@ object RouteGroupComparator : Comparator<UiRouteGroup> {
         if (digitsCmp != 0)
             return digitsCmp
 
-        val suffixFirst = first.name.takeLastWhile { it.isDigit().not() }
-        val suffixSecond = second.name.takeLastWhile { it.isDigit().not() }
+        val suffixFirst = first.takeLastWhile { it.isDigit().not() }
+        val suffixSecond = second.takeLastWhile { it.isDigit().not() }
         return suffixFirst.compareTo(suffixSecond)
     }
 }
