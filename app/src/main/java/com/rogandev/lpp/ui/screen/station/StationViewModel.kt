@@ -4,7 +4,6 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rogandev.lpp.repository.Repository
 import com.rogandev.lpp.ui.model.UiArrival
 import com.rogandev.lpp.ui.model.UiArrivalGroup
 import com.rogandev.lpp.ui.model.UiRouteGroup
@@ -18,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StationViewModel @Inject constructor(
-    private val repository: Repository,
+    private val repository: com.rogandev.lpp.repository.Repository,
 ) : ViewModel() {
 
     private val stationCodeFlow = MutableStateFlow("")
@@ -43,7 +42,7 @@ class StationViewModel @Inject constructor(
                 val routeGroups = it.routeGroups.map { groupName ->
                     UiRouteGroup.fromName(groupName)
                 }
-                UiStation(it.id, it.name, it.latitude, it.longitude, routeGroups)
+                UiStation(it.code, it.name, it.latitude, it.longitude, routeGroups)
             }.onSuccess { station ->
                 _uiStateFlow.update { it.copy(station = station, loadingStation = false) }
             }.onFailure { err ->
@@ -65,7 +64,7 @@ class StationViewModel @Inject constructor(
                 _uiStateFlow.update { it.copy(loadingArrivals = true) }
 
                 repository.getStationArrivals(code).map { apiArrivals ->
-                    apiArrivals.groupBy { it.routeName }.toSortedMap(RouteGroupNameComparator).map { (routeName, apiArrivalsOnRoute) ->
+                    apiArrivals.groupBy { it.routeGroup }.toSortedMap(RouteGroupNameComparator).map { (routeName, apiArrivalsOnRoute) ->
                         val routeGroup = UiRouteGroup.fromName(routeName)
                         val arrivals = apiArrivalsOnRoute.map {
                             UiArrival("${it.eta.toString(10)} min", false)

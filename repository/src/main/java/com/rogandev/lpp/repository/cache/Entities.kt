@@ -1,4 +1,4 @@
-package com.rogandev.lpp.cache
+package com.rogandev.lpp.repository.cache
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

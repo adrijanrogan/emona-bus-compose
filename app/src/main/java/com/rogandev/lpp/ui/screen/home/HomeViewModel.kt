@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(
                     val routeGroups = it.routeGroups.map { routeGroup ->
                         UiRouteGroup.fromName(routeGroup)
                     }
-                    UiStation(it.id, it.name, it.latitude, it.longitude, routeGroups)
+                    UiStation(it.code, it.name, it.latitude, it.longitude, routeGroups)
                 }.sortedBy {
                     it.name
                 }

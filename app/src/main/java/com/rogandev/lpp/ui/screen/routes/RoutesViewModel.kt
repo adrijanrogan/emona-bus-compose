@@ -4,7 +4,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rogandev.lpp.ktx.mapIterable
+import com.rogandev.lpp.ktx.mapList
 import com.rogandev.lpp.repository.Repository
 import com.rogandev.lpp.ui.model.UiRoute
 import com.rogandev.lpp.ui.model.UiRouteGroup
@@ -29,19 +29,19 @@ class RoutesViewModel @Inject constructor(
 
             _uiStateFlow.update { it.copy(loading = true) }
 
-            repository.getActiveRoutes().mapIterable { apiRoute ->
-                val routeNameParts = apiRoute.routeName.split('-').map { it.trim().lowercase().capitalize(Locale("sl")) }
-                val (routeStart, routeMid, routeEnd) = when (routeNameParts.size) {
-                    1 -> Triple("", emptyList(), routeNameParts.first())
-                    2 -> Triple(routeNameParts[0], emptyList(), routeNameParts[1])
-                    else -> Triple(routeNameParts.first(), routeNameParts.subList(1, routeNameParts.lastIndex), routeNameParts.last())
+            repository.getActiveRoutes().mapList { route ->
+                val tripNameParts = route.tripName.split('-').map { it.trim().lowercase().capitalize(Locale("sl")) }
+                val (routeStart, routeMid, routeEnd) = when (tripNameParts.size) {
+                    1 -> Triple("", emptyList(), tripNameParts.first())
+                    2 -> Triple(tripNameParts[0], emptyList(), tripNameParts[1])
+                    else -> Triple(tripNameParts.first(), tripNameParts.subList(1, tripNameParts.lastIndex), tripNameParts.last())
                 }
 
-                val routeGroup = UiRouteGroup.fromName(apiRoute.routeNumber)
+                val routeGroup = UiRouteGroup.fromName(route.routeGroup)
 
                 UiRoute(
-                    tripId = apiRoute.tripId,
-                    routeId = apiRoute.routeId,
+                    tripId = route.tripId,
+                    routeId = route.routeId,
                     routeGroup = routeGroup,
                     routeStart = routeStart,
                     routeMid = routeMid,

@@ -1,4 +1,4 @@
-package com.rogandev.lpp.cache.meta
+package com.rogandev.lpp.repository.cache.meta
 
 import android.content.Context
 import androidx.core.content.edit
@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MetadataCache @Inject constructor(@ApplicationContext context: Context) {
+class Metadata @Inject constructor(@ApplicationContext context: Context) {
 
     private val sp = context.getSharedPreferences("metadata", Context.MODE_PRIVATE)
 

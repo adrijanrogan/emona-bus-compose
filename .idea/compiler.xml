@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11" />
+    <bytecodeTargetLevel target="1.7">
+      <module name="Emona_Bus.api" target="11" />
+      <module name="Emona_Bus.app" target="11" />
+      <module name="Emona_Bus.di" target="11" />
+      <module name="Emona_Bus.repository" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

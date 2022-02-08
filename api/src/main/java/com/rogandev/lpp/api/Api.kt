@@ -4,7 +4,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface Api {
+internal interface Api {
 
     companion object {
         const val BASE_URL = "https://data.lpp.si/api/"

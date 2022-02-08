@@ -1,8 +1,8 @@
-package com.rogandev.lpp.cache
+package com.rogandev.lpp.repository.cache
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.rogandev.lpp.cache.dao.StationDao
+import com.rogandev.lpp.repository.cache.dao.StationDao
 
 @Database(
     entities = [DbStation::class],

@@ -1,8 +1,8 @@
 package com.rogandev.lpp.ktx
 
-// Result
+// Result extensions
 
-inline fun <A, B> Result<Iterable<A>>.mapIterable(mapper: (A) -> B): Result<Iterable<B>> =
+inline fun <A, B> Result<List<A>>.mapList(mapper: (A) -> B): Result<List<B>> =
     map { it.map(mapper) }
 
 fun <A, B> Result<A>.andThen(then: (A) -> Result<B>): Result<B> =

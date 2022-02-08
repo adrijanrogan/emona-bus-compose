@@ -14,3 +14,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Emona Bus"
 include ':app'
+include ':api'
+include ':repository'
+include ':ktx'

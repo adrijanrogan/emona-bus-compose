@@ -1,11 +1,9 @@
 package com.rogandev.lpp.api
 
-import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
@@ -21,18 +19,20 @@ abstract class ApiModule {
 
         @Provides
         @Singleton
-        fun provideApi(@ApplicationContext context: Context): Api {
+        fun provideApiSource(): ApiSource {
             val json = Json {
                 ignoreUnknownKeys = true
             }
             val contentType = MediaType.get("application/json")
 
             val retrofit = Retrofit.Builder()
-                .baseUrl(Api.BASE_URL)
+                .baseUrl(com.rogandev.lpp.api.Api.BASE_URL)
                 .addConverterFactory(json.asConverterFactory(contentType))
                 .build()
 
-            return retrofit.create()
+            val api = retrofit.create<Api>()
+
+            return ApiSource(api)
         }
     }
 }
