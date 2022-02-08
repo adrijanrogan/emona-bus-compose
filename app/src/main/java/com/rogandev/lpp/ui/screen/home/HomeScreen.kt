@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.rogandev.lpp.R
-import com.rogandev.lpp.ui.component.RouteIndicators
+import com.rogandev.lpp.ui.component.StationCard
 import com.rogandev.lpp.ui.model.UiStation
-import com.rogandev.lpp.ui.screen.Destination
+import com.rogandev.lpp.ui.screen.Navigation
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
@@ -61,10 +61,10 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
 
                 Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                     SquareCard(modifier = Modifier.weight(1f), text = "Stops", iconResId = R.drawable.ic_bus, onActionClick = {
-                        navController.navigate(Destination.Stations.route)
+                        navController.navigate(Navigation.Stations.route)
                     })
                     SquareCard(modifier = Modifier.weight(1f), text = "Routes", iconResId = R.drawable.ic_trip, onActionClick = {
-                        navController.navigate(Destination.Stations.route)
+                        navController.navigate(Navigation.Routes.route)
                     })
                 }
 
@@ -126,54 +126,6 @@ fun Section(modifier: Modifier = Modifier, nameText: String, actionText: String,
             text = actionText,
             textAlign = TextAlign.End,
             color = MaterialTheme.colors.primary,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun StationCard(modifier: Modifier = Modifier, station: UiStation, onStationClick: (UiStation) -> Unit) {
-    // Elevated surface for station content
-    Surface(
-        modifier = modifier,
-        elevation = 2.dp,
-        shape = RoundedCornerShape(10.dp),
-        content = {
-            StationContent(
-                modifier = Modifier.padding(10.dp),
-                station = station
-            )
-        },
-        onClick = {
-            onStationClick(station)
-        }
-    )
-}
-
-@Composable
-fun StationContent(modifier: Modifier = Modifier, station: UiStation) {
-    // Show routes on the station, the station name and the station ID
-    Column(modifier = modifier) {
-
-        // Routes on the station
-        RouteIndicators(routeGroups = station.routeGroups, size = 30.dp, spacing = 5.dp)
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Station name
-        Text(
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            text = station.name
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        // Station ID
-        Text(
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            text = station.id
         )
     }
 }

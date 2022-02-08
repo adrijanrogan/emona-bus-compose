@@ -2,7 +2,7 @@ package com.rogandev.lpp.ui.screen.stations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rogandev.lpp.repository.StationRepository
+import com.rogandev.lpp.repository.BusRepository
 import com.rogandev.lpp.ui.model.UiRouteGroup
 import com.rogandev.lpp.ui.model.UiStation
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StationsViewModel @Inject constructor(
-    private val stationRepository: StationRepository,
+    private val busRepository: BusRepository,
 ) : ViewModel() {
 
     private val _uiStateFlow = MutableStateFlow(StationsScreenState(emptyList(), false))
@@ -27,10 +27,10 @@ class StationsViewModel @Inject constructor(
             _uiStateFlow.update { it.copy(loading = true) }
             delay(1000)
 
-            stationRepository.getStations().map { list ->
+            busRepository.getStations().map { list ->
                 list.map {
-                    val routes = it.routeGroups.map { routeGrup ->
-                        UiRouteGroup.fromName(routeGrup)
+                    val routes = it.routeGroups.map { routeGroup ->
+                        UiRouteGroup.fromName(routeGroup)
                     }
                     UiStation(it.id, it.name, it.latitude, it.longitude, routes)
                 }.sortedBy {

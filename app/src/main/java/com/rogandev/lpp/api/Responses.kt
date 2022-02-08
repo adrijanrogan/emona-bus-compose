@@ -4,15 +4,31 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class LppList<T>(
+class ApiList<T>(
     @SerialName("success")
     val success: Boolean,
     @SerialName("data")
     val data: List<T>?,
 )
 
+// Route
+
 @Serializable
-class StationDetails(
+class ApiRoute(
+    @SerialName("trip_id")
+    val tripId: String,
+    @SerialName("route_id")
+    val routeId: String,
+    @SerialName("route_number")
+    val routeNumber: String,
+    @SerialName("route_name")
+    val routeName: String,
+)
+
+// Station
+
+@Serializable
+class ApiStationDetails(
     @SerialName("ref_id")
     val id: String,
     @SerialName("name")
@@ -22,5 +38,5 @@ class StationDetails(
     @SerialName("longitude")
     val longitude: Double,
     @SerialName("route_groups_on_station")
-    val routes: List<String>
+    val routeGroups: List<String>
 )

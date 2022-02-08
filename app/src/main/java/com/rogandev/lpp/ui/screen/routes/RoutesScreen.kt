@@ -1,4 +1,4 @@
-package com.rogandev.lpp.ui.screen.stations
+package com.rogandev.lpp.ui.screen.routes
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,19 +10,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rogandev.lpp.ui.component.BackTopAppBar
-import com.rogandev.lpp.ui.component.StationCard
-import com.rogandev.lpp.ui.model.UiStation
+import com.rogandev.lpp.ui.component.RouteCard
+import com.rogandev.lpp.ui.model.UiRoute
 
 @Composable
-fun StationsScreen(state: StationsScreenState, onBackClick: () -> Unit, onStationClick: (UiStation) -> Unit) {
+fun RoutesScreen(state: RoutesScreenState, onBackClick: () -> Unit, onRouteClick: (UiRoute) -> Unit) {
     Scaffold(
         topBar = {
-            BackTopAppBar(title = "Stops", onBackClick = onBackClick)
+            BackTopAppBar(title = "Routes", onBackClick = onBackClick)
         },
 
         content = { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-                StationList(stations = state.stations, onStationClick = onStationClick)
+                RouteList(stations = state.routes, onRouteClick = onRouteClick)
 
                 if (state.loading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -33,27 +33,28 @@ fun StationsScreen(state: StationsScreenState, onBackClick: () -> Unit, onStatio
 }
 
 @Composable
-fun StationList(stations: List<UiStation>, onStationClick: (UiStation) -> Unit) {
+fun RouteList(stations: List<UiRoute>, onRouteClick: (UiRoute) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(vertical = 20.dp)) {
-        itemsIndexed(items = stations, key = { _, item -> item.id }) { idx, item ->
+        itemsIndexed(items = stations, key = { _, item -> item.tripId }) { idx, item ->
 
-            // If the previous station starts with a different letter, add a divider
+            // If the previous route starts with a different number, add a divider
             val previous = stations.getOrNull(idx - 1)
-            val previousChar = previous?.name?.firstOrNull()
-            val currentChar = item.name.firstOrNull()
-            if (previousChar != null && currentChar != null && previousChar != currentChar) {
+            val previousNumber = previous?.routeGroup?.name?.filter { it.isDigit() }?.toIntOrNull() ?: 0
+            val currentNumber = item.routeGroup.name.filter { it.isDigit() }.toIntOrNull() ?: 0
+
+            if (previousNumber != 0 && previousNumber != currentNumber) {
                 Spacer(modifier = Modifier.height(10.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
-            StationCard(
+            RouteCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 10.dp),
-                station = item,
-                onStationClick = {
-                    onStationClick(item)
+                route = item,
+                onRouteClick = {
+                    onRouteClick(item)
                 }
             )
         }

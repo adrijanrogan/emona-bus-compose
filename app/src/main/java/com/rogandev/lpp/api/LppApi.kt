@@ -9,8 +9,13 @@ interface LppApi {
         const val BASE_URL = "https://data.lpp.si/api/"
     }
 
+    // Route
+
+    @GET("route/active-routes")
+    suspend fun activeRoutes(): Response<ApiList<ApiRoute>>
+
     // Station
 
     @GET("station/station-details?show-subroutes=1")
-    suspend fun stationDetails(): Response<LppList<StationDetails>>
+    suspend fun stationDetails(): Response<ApiList<ApiStationDetails>>
 }

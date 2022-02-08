@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rogandev.lpp.R
-import com.rogandev.lpp.repository.StationRepository
+import com.rogandev.lpp.repository.BusRepository
 import com.rogandev.lpp.ui.model.UiRouteGroup
 import com.rogandev.lpp.ui.model.UiStation
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val stationRepository: StationRepository,
+    private val busRepository: BusRepository,
 ) : ViewModel() {
 
     private val cards = listOf(
@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
             _uiStateFlow.update { it.copy(loading = true) }
             delay(1000)
 
-            stationRepository.getStations().map { list ->
+            busRepository.getStations().map { list ->
                 list.map {
                     val routeGroups = it.routeGroups.map { routeGroup ->
                         UiRouteGroup.fromName(routeGroup)
