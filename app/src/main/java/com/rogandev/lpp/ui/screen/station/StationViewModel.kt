@@ -8,6 +8,7 @@ import com.rogandev.lpp.repository.BusRepository
 import com.rogandev.lpp.ui.model.UiArrival
 import com.rogandev.lpp.ui.model.UiArrivalGroup
 import com.rogandev.lpp.ui.model.UiRouteGroup
+import com.rogandev.lpp.ui.model.UiStation
 import com.rogandev.lpp.ui.screen.routes.RouteGroupNameComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -22,14 +23,33 @@ class StationViewModel @Inject constructor(
 
     private val stationCodeFlow = MutableStateFlow("")
 
-    private val _uiStateFlow = MutableStateFlow(StationScreenState(emptyList(), emptyList(),
+    private val _uiStateFlow = MutableStateFlow(StationScreenState(
+        station = null,
+        messages = emptyList(),
+        arrivalGroups = emptyList(),
         loadingMessages = false,
-        loadingArrivals = false
+        loadingArrivals = false,
+        loadingStation = false,
     ))
     val uiStateFlow get() = _uiStateFlow.asStateFlow()
 
     init {
         stationCodeFlow.filter { it.isNotBlank() }.mapLatest { code ->
+
+            _uiStateFlow.update { it.copy(loadingArrivals = true, loadingStation = true, loadingMessages = true) }
+
+            // Fetch station details once
+            busRepository.getStation(code).map {
+                val routeGroups = it.routeGroups.map { groupName ->
+                    UiRouteGroup.fromName(groupName)
+                }
+                UiStation(it.id, it.name, it.latitude, it.longitude, routeGroups)
+            }.onSuccess { station ->
+                _uiStateFlow.update { it.copy(station = station, loadingStation = false) }
+            }.onFailure { err ->
+                Timber.e(err)
+                _uiStateFlow.update { it.copy(loadingStation = false) }
+            }
 
             // Fetch messages once
             busRepository.getStationMessages(code).onSuccess { messages ->
@@ -62,7 +82,7 @@ class StationViewModel @Inject constructor(
                     _uiStateFlow.update { it.copy(loadingArrivals = false) }
                 }
 
-                delay(15_000)
+                delay(30_000)
             }
 
         }.launchIn(viewModelScope)
@@ -74,8 +94,10 @@ class StationViewModel @Inject constructor(
 }
 
 data class StationScreenState(
+    val station: UiStation?,
     val messages: List<String>,
     val arrivalGroups: List<UiArrivalGroup>,
+    val loadingStation: Boolean,
     val loadingMessages: Boolean,
     val loadingArrivals: Boolean,
 )

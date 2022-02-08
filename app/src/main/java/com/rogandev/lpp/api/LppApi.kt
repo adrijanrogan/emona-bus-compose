@@ -25,4 +25,7 @@ interface LppApi {
 
     @GET("station/station-details?show-subroutes=1")
     suspend fun stationDetails(): Response<ApiList<ApiStationDetails>>
+
+    @GET("station/station-details?show-subroutes=1")
+    suspend fun stationDetails(@Query("station-code") code: String): Response<ApiObject<ApiStationDetails>>
 }

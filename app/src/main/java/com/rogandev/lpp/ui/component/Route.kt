@@ -69,7 +69,7 @@ fun RouteIndicators(
     routeGroups: List<UiRouteGroup>
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.End),
+        horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.Start),
         modifier = modifier
     ) {
         routeGroups.forEach { route ->

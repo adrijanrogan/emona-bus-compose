@@ -19,7 +19,7 @@ class BusRepository @Inject constructor(private val api: LppApi) {
         return runCatching {
             api.activeRoutes()
         }.andThen {
-            it.getData()
+            it.getListData()
         }
     }
 
@@ -37,7 +37,7 @@ class BusRepository @Inject constructor(private val api: LppApi) {
         return runCatching {
             api.stationMessages(code)
         }.andThen {
-            it.getData()
+            it.getListData()
         }.map { apiMessages ->
             apiMessages.flatMap { apiMessage ->
                 val ampersanded = apiMessage.replace("%26", "&")
@@ -55,7 +55,7 @@ class BusRepository @Inject constructor(private val api: LppApi) {
             runCatching {
                 api.stationDetails()
             }.andThen {
-                it.getData()
+                it.getListData()
             }.onSuccess {
                 stops = it
                 stopsRefresh = Instant.now()
@@ -63,7 +63,15 @@ class BusRepository @Inject constructor(private val api: LppApi) {
         }
     }
 
-    private fun <T> Response<ApiList<T>>.getData(): Result<List<T>> = runCatching {
+    suspend fun getStation(code: String): Result<ApiStationDetails> {
+        return runCatching {
+            api.stationDetails(code)
+        }.andThen {
+            it.getObjectData()
+        }
+    }
+
+    private fun <T> Response<ApiList<T>>.getListData(): Result<List<T>> = runCatching {
         val body = body()
 
         if (isSuccessful.not()) {
