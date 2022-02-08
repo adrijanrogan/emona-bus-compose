@@ -2,18 +2,28 @@ package com.rogandev.lpp.repository
 
 import android.text.Html
 import com.rogandev.lpp.api.*
+import com.rogandev.lpp.cache.DbStation
+import com.rogandev.lpp.cache.dao.StationDao
+import com.rogandev.lpp.cache.meta.MetadataCache
 import com.rogandev.lpp.ktx.andThen
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import retrofit2.Response
+import timber.log.Timber
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BusRepository @Inject constructor(private val api: LppApi) {
-
-    private var stops = listOf<ApiStationDetails>()
-    private var stopsRefresh = Instant.MIN
+class Repository @Inject constructor(
+    private val api: Api,
+    private val stationDao: StationDao,
+    private val metadataCache: MetadataCache,
+) {
 
     suspend fun getActiveRoutes(): Result<List<ApiRoute>> {
         return runCatching {
@@ -48,19 +58,29 @@ class BusRepository @Inject constructor(private val api: LppApi) {
         }
     }
 
-    suspend fun getStations(): Result<List<ApiStationDetails>> {
-        return if (stopsRefresh.plus(5, ChronoUnit.MINUTES).isAfter(Instant.now())) {
-            Result.success(stops)
-        } else {
-            runCatching {
-                api.stationDetails()
-            }.andThen {
-                it.getListData()
-            }.onSuccess {
-                stops = it
-                stopsRefresh = Instant.now()
+    suspend fun getStations(): Flow<List<ApiStationDetails>> {
+        return stationDao.getAll().onStart {
+            val lastRefresh = metadataCache.getStationRefreshTime()
+            Timber.d("Last refresh = $lastRefresh")
+            if (lastRefresh < Instant.now().minus(1, ChronoUnit.HOURS)) {
+                val refreshTime = Instant.now()
+                runCatching {
+                    api.stationDetails()
+                }.andThen {
+                    it.getListData()
+                }.onSuccess { apiStations ->
+                    val dbStations = apiStations.map {
+                        DbStation(it.id, it.name, it.longitude, it.latitude, it.routeGroups.joinToString(separator = ","))
+                    }
+                    stationDao.insertAll(dbStations)
+                    metadataCache.putStationRefreshTime(refreshTime)
+                }
             }
-        }
+        }.map { dbStations ->
+            dbStations.map {
+                ApiStationDetails(it.code, it.name, it.latitude, it.longitude, it.routeGroups.split(","))
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun getStation(code: String): Result<ApiStationDetails> {

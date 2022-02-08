@@ -21,14 +21,14 @@ abstract class ApiModule {
 
         @Provides
         @Singleton
-        fun provideApi(@ApplicationContext context: Context): LppApi {
+        fun provideApi(@ApplicationContext context: Context): Api {
             val json = Json {
                 ignoreUnknownKeys = true
             }
             val contentType = MediaType.get("application/json")
 
             val retrofit = Retrofit.Builder()
-                .baseUrl(LppApi.BASE_URL)
+                .baseUrl(Api.BASE_URL)
                 .addConverterFactory(json.asConverterFactory(contentType))
                 .build()
 

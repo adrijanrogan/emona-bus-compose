@@ -5,7 +5,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rogandev.lpp.ktx.mapIterable
-import com.rogandev.lpp.repository.BusRepository
+import com.rogandev.lpp.repository.Repository
 import com.rogandev.lpp.ui.model.UiRoute
 import com.rogandev.lpp.ui.model.UiRouteGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RoutesViewModel @Inject constructor(
-    private val busRepository: BusRepository,
+    private val repository: Repository,
 ) : ViewModel() {
 
     private val _uiStateFlow = MutableStateFlow(RoutesScreenState(emptyList(), false))
@@ -29,7 +29,7 @@ class RoutesViewModel @Inject constructor(
 
             _uiStateFlow.update { it.copy(loading = true) }
 
-            busRepository.getActiveRoutes().mapIterable { apiRoute ->
+            repository.getActiveRoutes().mapIterable { apiRoute ->
                 val routeNameParts = apiRoute.routeName.split('-').map { it.trim().lowercase().capitalize(Locale("sl")) }
                 val (routeStart, routeMid, routeEnd) = when (routeNameParts.size) {
                     1 -> Triple("", emptyList(), routeNameParts.first())

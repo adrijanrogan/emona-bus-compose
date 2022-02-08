@@ -2,20 +2,17 @@ package com.rogandev.lpp.ui.screen.stations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rogandev.lpp.repository.BusRepository
+import com.rogandev.lpp.repository.Repository
 import com.rogandev.lpp.ui.model.UiRouteGroup
 import com.rogandev.lpp.ui.model.UiStation
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class StationsViewModel @Inject constructor(
-    private val busRepository: BusRepository,
+    private val repository: Repository,
 ) : ViewModel() {
 
     private val _uiStateFlow = MutableStateFlow(StationsScreenState(emptyList(), false))
@@ -25,9 +22,8 @@ class StationsViewModel @Inject constructor(
         viewModelScope.launch {
 
             _uiStateFlow.update { it.copy(loading = true) }
-            delay(1000)
 
-            busRepository.getStations().map { list ->
+            repository.getStations().map { list ->
                 list.map {
                     val routes = it.routeGroups.map { routeGroup ->
                         UiRouteGroup.fromName(routeGroup)
@@ -36,13 +32,11 @@ class StationsViewModel @Inject constructor(
                 }.sortedBy {
                     it.name
                 }
-            }.onSuccess { stations ->
+            }.onEach { stations ->
                 _uiStateFlow.update {
                     it.copy(stations = stations, loading = false)
                 }
-            }.onFailure {
-                _uiStateFlow.update { it.copy(loading = false) }
-            }
+            }.launchIn(viewModelScope)
         }
     }
 }

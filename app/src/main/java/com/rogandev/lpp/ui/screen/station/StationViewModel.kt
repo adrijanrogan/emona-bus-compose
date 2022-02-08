@@ -4,7 +4,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rogandev.lpp.repository.BusRepository
+import com.rogandev.lpp.repository.Repository
 import com.rogandev.lpp.ui.model.UiArrival
 import com.rogandev.lpp.ui.model.UiArrivalGroup
 import com.rogandev.lpp.ui.model.UiRouteGroup
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StationViewModel @Inject constructor(
-    private val busRepository: BusRepository,
+    private val repository: Repository,
 ) : ViewModel() {
 
     private val stationCodeFlow = MutableStateFlow("")
@@ -39,7 +39,7 @@ class StationViewModel @Inject constructor(
             _uiStateFlow.update { it.copy(loadingArrivals = true, loadingStation = true, loadingMessages = true) }
 
             // Fetch station details once
-            busRepository.getStation(code).map {
+            repository.getStation(code).map {
                 val routeGroups = it.routeGroups.map { groupName ->
                     UiRouteGroup.fromName(groupName)
                 }
@@ -52,7 +52,7 @@ class StationViewModel @Inject constructor(
             }
 
             // Fetch messages once
-            busRepository.getStationMessages(code).onSuccess { messages ->
+            repository.getStationMessages(code).onSuccess { messages ->
                 _uiStateFlow.update { it.copy(messages = messages, loadingMessages = false) }
             }.onFailure { err ->
                 Timber.e(err)
@@ -64,7 +64,7 @@ class StationViewModel @Inject constructor(
             while (true) {
                 _uiStateFlow.update { it.copy(loadingArrivals = true) }
 
-                busRepository.getStationArrivals(code).map { apiArrivals ->
+                repository.getStationArrivals(code).map { apiArrivals ->
                     apiArrivals.groupBy { it.routeName }.toSortedMap(RouteGroupNameComparator).map { (routeName, apiArrivalsOnRoute) ->
                         val routeGroup = UiRouteGroup.fromName(routeName)
                         val arrivals = apiArrivalsOnRoute.map {
