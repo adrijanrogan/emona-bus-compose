@@ -42,20 +42,21 @@ fun RouteCard(modifier: Modifier = Modifier, route: UiRoute, onRouteClick: (UiRo
 @Composable
 fun RouteContent(modifier: Modifier = Modifier, route: UiRoute) {
 
-    Row(modifier = modifier) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
 
         // Route indicator on the left
-        RouteIndicator(size = 40.dp, routeGroup = route.routeGroup)
+        RouteIndicator(size = 50.dp, routeGroup = route.routeGroup)
+
+        Spacer(modifier = Modifier.width(20.dp))
 
         // Route directions
         Column {
-            Text(text = route.routeStart)
-
+            Text(text = route.routeEnd, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Spacer(modifier = Modifier.height(5.dp))
             route.routeMid.forEach {
-                Text(text = it)
+                Text(text = "• $it", fontSize = 16.sp)
             }
-
-            Text(text = route.routeEnd)
+            Text(text = "• ${route.routeStart}", fontSize = 16.sp)
         }
     }
 }
@@ -86,11 +87,41 @@ fun RouteIndicator(size: Dp, routeGroup: UiRouteGroup) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            fontSize = 12.sp,
+            fontSize = (size.value / 2.5).sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             text = routeGroup.name,
         )
+    }
+}
+
+@Composable
+@Preview
+fun RouteCardPreview() {
+    val routes = listOf(
+        UiRoute(
+            tripId = "",
+            routeId = "",
+            routeGroup = UiRouteGroup.fromName("7"),
+            routeMid = emptyList(),
+            routeStart = "Nove Jarše",
+            routeEnd = "Pržan"
+        ),
+        UiRoute(
+            tripId = "",
+            routeId = "",
+            routeGroup = UiRouteGroup.fromName("7L"),
+            routeStart = "Letališka",
+            routeMid = listOf("Nove Jarše"),
+            routeEnd = "Pržan"
+        )
+    )
+
+    Column(modifier = Modifier.width(400.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        routes.forEach { RouteCard(
+            modifier = Modifier.fillMaxWidth(),
+            route = it, onRouteClick = {}
+        ) }
     }
 }
 
