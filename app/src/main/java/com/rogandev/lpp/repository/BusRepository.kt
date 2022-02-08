@@ -1,5 +1,6 @@
 package com.rogandev.lpp.repository
 
+import android.text.Html
 import com.rogandev.lpp.api.ApiList
 import com.rogandev.lpp.api.ApiRoute
 import com.rogandev.lpp.api.ApiStationDetails
@@ -11,6 +12,15 @@ class BusRepository @Inject constructor(private val api: LppApi) {
 
     suspend fun getActiveRoutes(): Result<List<ApiRoute>> {
         return api.activeRoutes().getData()
+    }
+
+    suspend fun getStationMessages(code: String): Result<List<String>> {
+        return api.stationMessages(code).getData().map { apiMessages ->
+            apiMessages.flatMap { apiMessage ->
+                val ampersanded = apiMessage.replace("%26", "&")
+                Html.fromHtml(ampersanded, Html.FROM_HTML_MODE_COMPACT).split("***").map { it.trim() }
+            }
+        }
     }
 
     suspend fun getStations(): Result<List<ApiStationDetails>> {
